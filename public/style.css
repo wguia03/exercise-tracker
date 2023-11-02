@@ -21,7 +21,7 @@ p {
 form {
   margin-bottom: 25px;
   padding: 15px;
-  background-color: #87D37C;
+  background-color: royalblue;
   display: inline-block;
   width: 100%;
   max-width: 340px;
@@ -41,7 +41,7 @@ input {
 input[type=submit] {
   font-size: 16px;
   border-radius: 3px;
-  background-color: #E4F1FE;
+  background-color: #FFFEC4;
   border: 1px solid grey;
   box-shadow: 2px 2px #999;
   cursor: pointer;
