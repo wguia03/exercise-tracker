@@ -71,12 +71,7 @@ app.post("/api/users/:_id/exercises", (req, res) => {
   let { description, duration, date } = req.body;
   let userId = req.params._id;
   if (!date) {
-    date = new Date().toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "2-digit",
-      year: "numeric",
-    });
+    date = new Date().toDateString();
   }
 
   const newExercise = new exerciseModel({
