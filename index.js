@@ -104,6 +104,32 @@ app.post("/api/users/:_id/exercises", (req, res) => {
     });
 });
 
+app.get("/api/users/:_id/logs", (req, res) => {
+  const { _id } = req.params;
+
+  userModel
+    .findById(_id)
+    .then((userData) => {
+      const username = userData.username;
+      exerciseModel
+        .find({ userId: _id })
+        .select({ _id: 0, userId: 0, __v: 0 })
+        .then((data) => {
+          res.json({
+            username: username,
+            count: data.length,
+            log: data,
+          });
+        })
+        .catch((err) => {
+          res.json({ error: "Database connection error" });
+        });
+    })
+    .catch((err) => {
+      res.json({ error: "Database connection error" });
+    });
+});
+
 //Listener
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log("Your app is listening on port " + listener.address().port);
