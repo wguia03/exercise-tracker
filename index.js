@@ -5,6 +5,12 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const app = express();
 
+// Date Validator
+function isValidDate(dateString) {
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  return dateRegex.test(dateString);
+}
+
 // Body Parser
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -36,7 +42,7 @@ const exerciseSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   description: { type: String, required: true },
   duration: { type: Number, required: true },
-  date: String,
+  date: Date,
 });
 
 const exerciseModel = mongoose.model("exercise", exerciseSchema);
@@ -71,7 +77,9 @@ app.post("/api/users/:_id/exercises", (req, res) => {
   let { description, duration, date } = req.body;
   let userId = req.params._id;
   if (!date) {
-    date = new Date().toDateString();
+    date = new Date();
+  } else {
+    date = new Date(date);
   }
 
   const newExercise = new exerciseModel({
@@ -91,7 +99,7 @@ app.post("/api/users/:_id/exercises", (req, res) => {
             username: data.username,
             description: doc.description,
             duration: doc.duration,
-            date: doc.date,
+            date: doc.date.toDateString(),
             _id: data._id,
           });
         })
@@ -106,15 +114,29 @@ app.post("/api/users/:_id/exercises", (req, res) => {
 
 app.get("/api/users/:_id/logs", (req, res) => {
   const { _id } = req.params;
+  const { from, to, limit } = req.query;
 
   userModel
     .findById(_id)
     .then((userData) => {
       const username = userData.username;
+
+      let query = { userId: _id };
+      if (from && to && isValidDate(from) && isValidDate(to)) {
+        const fromDate = new Date(from);
+        const toDate = new Date(to);
+        query.date = {
+          $gte: fromDate,
+          $lte: toDate,
+        };
+      }
+
       exerciseModel
-        .find({ userId: _id })
+        .find(query)
         .select({ _id: 0, userId: 0, __v: 0 })
+        .limit(limit)
         .then((data) => {
+          console.log(data);
           res.json({
             username: username,
             count: data.length,
