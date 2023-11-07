@@ -88,11 +88,11 @@ app.post("/api/users/:_id/exercises", (req, res) => {
         .select({ __v: 0 })
         .then((data) => {
           res.json({
-            username: data._doc.username,
+            username: data.username,
             description: doc.description,
             duration: doc.duration,
             date: doc.date,
-            _id: userId,
+            _id: data._id,
           });
         })
         .catch((err) => {
