@@ -136,11 +136,18 @@ app.get("/api/users/:_id/logs", (req, res) => {
         .select({ _id: 0, userId: 0, __v: 0 })
         .limit(limit)
         .then((data) => {
-          console.log(data);
+          const newData = data.map((object) => {
+            return {
+              description: object.description,
+              duration: object.duration,
+              date: object.date.toDateString(),
+            };
+          });
+
           res.json({
             username: username,
-            count: data.length,
-            log: data,
+            count: newData.length,
+            log: newData,
           });
         })
         .catch((err) => {
